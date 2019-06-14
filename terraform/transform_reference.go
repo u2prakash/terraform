@@ -102,7 +102,7 @@ func (t *DestroyValueReferenceTransformer) Transform(g *Graph) error {
 	vs := g.Vertices()
 	for _, v := range vs {
 		switch v.(type) {
-		case *NodeApplyableOutput, *NodeLocal:
+		case *NodeApplyableOutput, *NodeLocal, *NodeApplyableModuleVariable:
 			// OK
 		default:
 			continue
@@ -121,49 +121,6 @@ func (t *DestroyValueReferenceTransformer) Transform(g *Graph) error {
 
 			g.RemoveEdge(e)
 			g.Connect(&DestroyEdge{S: target, T: v})
-		}
-	}
-
-	return nil
-}
-
-// PruneUnusedValuesTransformer is s GraphTransformer that removes local and
-// output values which are not referenced in the graph. Since outputs and
-// locals always need to be evaluated, if they reference a resource that is not
-// available in the state the interpolation could fail.
-type PruneUnusedValuesTransformer struct{}
-
-func (t *PruneUnusedValuesTransformer) Transform(g *Graph) error {
-	// this might need multiple runs in order to ensure that pruning a value
-	// doesn't effect a previously checked value.
-	for removed := 0; ; removed = 0 {
-		for _, v := range g.Vertices() {
-			switch v.(type) {
-			case *NodeApplyableOutput, *NodeLocal:
-				// OK
-			default:
-				continue
-			}
-
-			dependants := g.UpEdges(v)
-
-			switch dependants.Len() {
-			case 0:
-				// nothing at all depends on this
-				g.Remove(v)
-				removed++
-			case 1:
-				// because an output's destroy node always depends on the output,
-				// we need to check for the case of a single destroy node.
-				d := dependants.List()[0]
-				if _, ok := d.(*NodeDestroyableOutput); ok {
-					g.Remove(v)
-					removed++
-				}
-			}
-		}
-		if removed == 0 {
-			break
 		}
 	}
 

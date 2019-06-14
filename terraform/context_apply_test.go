@@ -3695,7 +3695,11 @@ func TestContext2Apply_multiVar(t *testing.T) {
 	actual := state.RootModule().OutputValues["output"]
 	expected := cty.StringVal("bar0,bar1,bar2")
 	if actual == nil || actual.Value != expected {
-		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", actual.Value, expected)
+		var val cty.Value
+		if actual != nil {
+			val = actual.Value
+		}
+		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", val, expected)
 	}
 
 	t.Logf("Initial state: %s", state.String())
@@ -3987,7 +3991,11 @@ func TestContext2Apply_multiVarOrder(t *testing.T) {
 	actual := state.RootModule().OutputValues["should-be-11"]
 	expected := cty.StringVal("index-11")
 	if actual == nil || actual.Value != expected {
-		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", actual.Value, expected)
+		var val cty.Value
+		if actual != nil {
+			val = actual.Value
+		}
+		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", val, expected)
 	}
 }
 
@@ -4023,7 +4031,11 @@ func TestContext2Apply_multiVarOrderInterp(t *testing.T) {
 	actual := state.RootModule().OutputValues["should-be-11"]
 	expected := cty.StringVal("baz-index-11")
 	if actual == nil || actual.Value != expected {
-		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", actual.Value, expected)
+		var val cty.Value
+		if actual != nil {
+			val = actual.Value
+		}
+		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", val, expected)
 	}
 }
 
@@ -9650,7 +9662,11 @@ func TestContext2Apply_terraformWorkspace(t *testing.T) {
 	actual := state.RootModule().OutputValues["output"]
 	expected := cty.StringVal("foo")
 	if actual == nil || actual.Value != expected {
-		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", actual.Value, expected)
+		var val cty.Value
+		if actual != nil {
+			val = actual.Value
+		}
+		t.Fatalf("wrong value\ngot:  %#v\nwant: %#v", val, expected)
 	}
 }
 
